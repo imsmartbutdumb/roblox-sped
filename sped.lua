@@ -24,16 +24,30 @@ local function dnec(signal)
 end
 
 local speed_amnt = 5
+local is_speed_enabled = false
 
-do
-    local a,b
+local function toggle_speed()
+    is_speed_enabled = not is_speed_enabled
+    if is_speed_enabled then
+        do
+            local a,b
 
-    a = dnec(l_humrp.Changed)
-    b = dnec(l_humrp:GetPropertyChangedSignal("CFrame"))
+            a = dnec(l_humrp.Changed)
+            b = dnec(l_humrp:GetPropertyChangedSignal("CFrame"))
 
-    s_rs:BindToRenderStep("speed",2000,function(dt)
-        l_humrp.CFrame += l_hum.MoveDirection*dt*5*speed_amnt
-    end)
+            s_rs:BindToRenderStep("speed",2000,function(dt)
+                l_humrp.CFrame += l_hum.MoveDirection*dt*5*speed_amnt
+            end)
+        end
+    else
+        s_rs:UnbindFromRenderStep("speed")
+    end
 end
+
+game:GetService("UserInputService").InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.G then
+        toggle_speed()
+    end
+end)
 
 resp_con:Disconnect()
